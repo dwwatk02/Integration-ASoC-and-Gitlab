@@ -10,7 +10,7 @@ variables:
   asocApiKeySecret: xxx
   asocAppName: "$CI_PROJECT_NAME"
   serviceUrl: cloud.appscan.com
-  assetGroupId: 542cbabb-3975-4b01-b2f0-85df17b03b47
+  assetGroupId: xxx
   scanName: "$CI_PROJECT_NAME-$CI_JOB_ID"
   scanLatestCommitFiles: 'no'
   sevSecGw: criticalIssues
