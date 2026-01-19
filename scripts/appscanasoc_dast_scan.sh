@@ -70,9 +70,26 @@ else
     elif [ -f $loginDastConfig ]; then
         scanId=$(curl -k -s -X 'POST' "https://$serviceUrl/api/v4/Scans/Dast" -H 'accept:application/json' -H "Authorization:Bearer $asocToken" -H 'Content-Type:application/json' -d  '{"ScanConfiguration":{"Target":{"StartingUrl":"'"$urlTarget"'","ShouldScanBelowThisDirectory":false,"UseCaseSensitivePaths":false,"AdditionalDomains":[]},"Tests":{"TestPolicy":"Default.policy","TestOptimizationLevel":"Fast","TestLoginPages":false,"TestLoginPagesWithoutSessionIds":false,"TestLogoutPages":false},"Communication":{"ThreadNum":10,"ConnectionTimeout":null,"UseAutomaticTimeout":true,"MaxRequestsIn":10,"MaxRequestsTimeFrame":1000},"ApplicationElements":{"EnableAutomaticFormFill":true}},"TestOnly":false,"ExploreItems":[],"LoginSequenceFileId":"'"$loginDastConfigId"'","ScanName":"'"DAST $scanName $urlTarget"'","Locale":"en","AppId":"'"$appId"'","ClientType":"user-site","FullyAutomatic":false,"Execute":true,"Recurrence":{"Rule":null,"StartDate":null,"EndDate":null}}'| jq -r '. | {Id} | join(" ")');
         echo "Scan started with a Login sequence, scanId $scanId";
-    elif [ -f $templateFile ]; then
-        scanId=$(curl -k -s -X 'POST' "https://$serviceUrl/api/v4/Scans/Dast" -H 'accept:application/json' -H "Authorization:Bearer $asocToken" -H 'Content-Type:application/json' -d  '{"ScanConfiguration":{"Target":{"StartingUrl":"'"$urlTarget"'","ShouldScanBelowThisDirectory":false,"UseCaseSensitivePaths":false,"AdditionalDomains":[]},"Tests":{"TestPolicy":"Default.policy","TestOptimizationLevel":"Fast","TestLoginPages":false,"TestLoginPagesWithoutSessionIds":false,"TestLogoutPages":false},"Communication":{"ThreadNum":10,"ConnectionTimeout":null,"UseAutomaticTimeout":true,"MaxRequestsIn":10,"MaxRequestsTimeFrame":1000},"ApplicationElements":{"EnableAutomaticFormFill":true}},"TestOnly":false,"ExploreItems":[],"ScanTemplateId":"'"$templateFileId"'","ScanName":"'"DAST $scanName $urlTarget"'","Locale":"en","AppId":"'"$appId"'","ClientType":"user-site","FullyAutomatic":false,"Execute":true,"Recurrence":{"Rule":null,"StartDate":null,"EndDate":null}}'| jq -r '. | {Id} | join(" ")');
-        echo "Scan started with a template file, scanId $scanId";
+    elif [ -f "$templateFile" ]; then
+    scanId=$(curl -k -s -X POST "https://$serviceUrl/api/v4/Scans/Dast" \
+        -H 'accept: application/json' \
+        -H "Authorization: Bearer $asocToken" \
+        -H 'Content-Type: application/json' \
+        -d '{
+            "ScanName": "'"DAST $scanName"'",
+            "EnableMailNotification": true,
+            "Locale": "en-US",
+            "AppId": "'"$appId"'",
+            "Execute": true,
+            "FullyAutomatic": false,
+            "Personal": false,
+            "Comment": "string",
+            "ScanOrTemplateFileId": "'"$templateFileId"'"
+        }' | jq -r '.Id')
+
+    echo "Scan started with a template file, scanId $scanId"
+fi
+
     else
         scanId=$(curl -k -s -X 'POST' "https://$serviceUrl/api/v4/Scans/Dast" -H 'accept:application/json' -H "Authorization:Bearer $asocToken" -H 'Content-Type:application/json' -d  '{"ScanConfiguration":{"Target":{"StartingUrl":"'"$urlTarget"'","ShouldScanBelowThisDirectory":false,"UseCaseSensitivePaths":false,"AdditionalDomains":[]},"Tests":{"TestPolicy":"Default.policy","TestOptimizationLevel":"Fast","TestLoginPages":false,"TestLoginPagesWithoutSessionIds":false,"TestLogoutPages":false},"Communication":{"ThreadNum":10,"ConnectionTimeout":null,"UseAutomaticTimeout":true,"MaxRequestsIn":10,"MaxRequestsTimeFrame":1000},"ApplicationElements":{"EnableAutomaticFormFill":true}},"TestOnly":false,"ExploreItems":[],"ScanName":"'"DAST $scanName $urlTarget"'","Locale":"en","AppId":"'"$appId"'","ClientType":"user-site","FullyAutomatic":false,"Execute":true,"Recurrence":{"Rule":null,"StartDate":null,"EndDate":null}}'| jq -r '. | {Id} | join(" ")');
         echo "Scan started, scanId $scanId";
