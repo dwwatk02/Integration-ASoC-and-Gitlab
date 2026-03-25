@@ -11,9 +11,10 @@ variables:
   appscanPresenceId: ''
   sevSecGw: 'criticalIssues'
   maxIssuesAllowed: 100
+  templateFile: ''
 
 include:
-  - remote: 'https://raw.githubusercontent.com/jrocia/Integration-ASoC-and-Gitlab/main/yaml/appscanasoc_scan_dast.yaml'
+  - remote: 'https://raw.githubusercontent.com/dwwatk02/Integration-ASoC-and-Gitlab/main/yaml/appscanasoc_scan_dast.yaml'
 
 stages:
 - scan-dast
